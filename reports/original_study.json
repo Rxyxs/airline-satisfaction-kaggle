@@ -1,0 +1,143 @@
+{
+  "original_only": {
+    "auc_on_original_holdout": 0.9950054231853243,
+    "auc_on_competition_train": 0.954908136584339,
+    "best_iteration": 481
+  },
+  "append_original": {
+    "cv_auc_competition_only": 0.958835970893577,
+    "cv_auc_with_original_rows": 0.9586558685471138
+  },
+  "distribution": {
+    "rows_competition_train": 699635,
+    "rows_original": 129880,
+    "share_satisfied_competition": 0.44357272006117476,
+    "share_satisfied_original": 0.43446258084385586,
+    "share_zero_departure_delay_competition": 0.9078333702573484,
+    "share_zero_departure_delay_original": 0.5647982753310749,
+    "mean_departure_delay_competition": 1.1762090232764226,
+    "mean_departure_delay_original": 14.713712657838004,
+    "dropped_column": "Inflight service",
+    "distinct_values_competition": {
+      "Age": 75,
+      "Flight Distance": 3474,
+      "Departure Delay in Minutes": 167,
+      "Arrival Delay in Minutes": 168,
+      "Inflight wifi service": 6,
+      "Departure/Arrival time convenient": 6,
+      "Ease of Online booking": 6,
+      "Gate location": 6,
+      "Food and drink": 6,
+      "Online boarding": 6,
+      "Seat comfort": 6,
+      "Inflight entertainment": 6,
+      "On-board service": 6,
+      "Leg room service": 6,
+      "Baggage handling": 5,
+      "Checkin service": 6,
+      "Cleanliness": 6,
+      "Gender": 2,
+      "Customer Type": 2,
+      "Type of Travel": 2,
+      "Class": 3
+    },
+    "distinct_values_original": {
+      "Age": 75,
+      "Flight Distance": 3821,
+      "Departure Delay in Minutes": 466,
+      "Arrival Delay in Minutes": 472,
+      "Inflight wifi service": 6,
+      "Departure/Arrival time convenient": 6,
+      "Ease of Online booking": 6,
+      "Gate location": 6,
+      "Food and drink": 6,
+      "Online boarding": 6,
+      "Seat comfort": 6,
+      "Inflight entertainment": 6,
+      "On-board service": 6,
+      "Leg room service": 6,
+      "Baggage handling": 5,
+      "Checkin service": 6,
+      "Cleanliness": 6,
+      "Gender": 2,
+      "Customer Type": 2,
+      "Type of Travel": 2,
+      "Class": 3
+    }
+  },
+  "label_noise_equivalent": {
+    "stack_auc_competition_cv": 0.9610897443220682,
+    "stack_auc_original": 0.9936899686512679,
+    "flip_rate_matching_competition_auc": 0.03,
+    "curve": [
+      {
+        "flip_rate": 0.0,
+        "auc": 0.9936899686512678
+      },
+      {
+        "flip_rate": 0.005,
+        "auc": 0.9885765868070419
+      },
+      {
+        "flip_rate": 0.01,
+        "auc": 0.9836699953127452
+      },
+      {
+        "flip_rate": 0.015,
+        "auc": 0.9785994430710465
+      },
+      {
+        "flip_rate": 0.02,
+        "auc": 0.9735570508815581
+      },
+      {
+        "flip_rate": 0.025,
+        "auc": 0.9684364347881816
+      },
+      {
+        "flip_rate": 0.03,
+        "auc": 0.9633805187947708
+      },
+      {
+        "flip_rate": 0.035,
+        "auc": 0.958287175197799
+      },
+      {
+        "flip_rate": 0.04,
+        "auc": 0.9531598061423014
+      },
+      {
+        "flip_rate": 0.045,
+        "auc": 0.9480415261598513
+      },
+      {
+        "flip_rate": 0.05,
+        "auc": 0.9427667404030992
+      },
+      {
+        "flip_rate": 0.055,
+        "auc": 0.9377369170048258
+      },
+      {
+        "flip_rate": 0.06,
+        "auc": 0.9326151702332091
+      },
+      {
+        "flip_rate": 0.065,
+        "auc": 0.9275099405136441
+      },
+      {
+        "flip_rate": 0.07,
+        "auc": 0.9224478939316458
+      },
+      {
+        "flip_rate": 0.075,
+        "auc": 0.9172669367283536
+      },
+      {
+        "flip_rate": 0.08,
+        "auc": 0.91216587175671
+      }
+    ]
+  }
+}

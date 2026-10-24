@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Airline Satisfaction Noise Floor</title>
+<meta name="description" content="Kaggle Playground S6E10: a 0.961 leaderboard model scores 0.994 on the real airline survey; the gap behaves like 3% random label flips.">
+<style>
+  :root {
+    --bg: #FBFAF8; --surface: #FFFFFF; --ink: #23201D; --muted: #6B645D;
+    --line: #E3DED7; --accent: #B5553D; --good: #4C7A3E;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #151719; --surface: #1D2023; --ink: #E9EBED; --muted: #A2A8AE;
+      --line: #2E3236; --accent: #D9765C; --good: #7FAE6B;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #151719; --surface: #1D2023; --ink: #E9EBED; --muted: #A2A8AE;
+    --line: #2E3236; --accent: #D9765C; --good: #7FAE6B;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font: 16px/1.65 -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 920px; margin: 0 auto; padding: 0 16px 96px; }
+  header { padding: 72px 0 40px; border-bottom: 1px solid var(--line); margin-bottom: 44px; }
+  h1 { font-size: clamp(1.9rem, 5vw, 2.7rem); line-height: 1.15; margin: 0 0 18px; letter-spacing: -0.02em; }
+  .lede { font-size: clamp(1.02rem, 2.4vw, 1.17rem); color: var(--muted); margin: 0 0 24px; max-width: 64ch; }
+  .lede strong { color: var(--ink); }
+  .links a {
+    display: inline-block; margin: 0 10px 10px 0; padding: 9px 15px;
+    border: 1px solid var(--line); border-radius: 7px; text-decoration: none;
+    color: var(--ink); background: var(--surface); font-size: 0.9rem; transition: border-color .15s;
+  }
+  .links a:hover { border-color: var(--accent); }
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; margin: 28px 0 0; }
+  .stat { background: var(--surface); border: 1px solid var(--line); border-radius: 9px; padding: 14px 16px; }
+  .stat b { display: block; font-size: 1.6rem; font-variant-numeric: tabular-nums; letter-spacing: -0.01em; }
+  .stat span { color: var(--muted); font-size: 0.85rem; }
+  h2 { font-size: 1.42rem; margin: 56px 0 8px; letter-spacing: -0.01em; padding-top: 10px; border-top: 1px solid var(--line); }
+  h2 .num { color: var(--accent); font-variant-numeric: tabular-nums; margin-right: 8px; }
+  p, li { max-width: 72ch; }
+  p { margin: 0 0 16px; }
+  figure { margin: 26px 0; }
+  figure img { width: 100%; height: auto; display: block; border: 1px solid var(--line); border-radius: 9px; background: #fff; }
+  figcaption { font-size: 0.85rem; color: var(--muted); margin-top: 9px; max-width: 72ch; }
+  .tablewrap { overflow-x: auto; margin: 22px 0; }
+  table { border-collapse: collapse; width: 100%; font-size: 0.9rem; min-width: 460px; }
+  th, td { padding: 9px 12px; text-align: right; border-bottom: 1px solid var(--line); }
+  th:first-child, td:first-child { text-align: left; }
+  thead th { color: var(--muted); font-weight: 600; font-size: 0.8rem; text-transform: uppercase; letter-spacing: .04em; }
+  .win td { color: var(--good); font-weight: 600; }
+  code { background: var(--surface); border: 1px solid var(--line); border-radius: 4px; padding: 1px 5px; font-size: 0.88em; }
+  footer { margin-top: 64px; padding-top: 20px; border-top: 1px solid var(--line); color: var(--muted); font-size: 0.85rem; }
+  footer a { color: var(--muted); }
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <h1>A 0.961 leaderboard that is really a 0.994 model</h1>
+  <p class="lede">Kaggle Playground S6E10 asks for the probability that an airline passenger is satisfied. Its 1 million rows are synthetic and were generated from a real survey of 129,880 passengers. I scored every competition model on that real survey too. The stack that gets <strong>0.961 on the leaderboard ranks real passengers at 0.994</strong>. To push it back down to 0.961, about <strong>3% of the real labels</strong> have to be flipped at random.</p>
+  <div class="links">
+    <a href="https://github.com/Rxyxs/airline-satisfaction-kaggle">Code on GitHub</a>
+    <a href="https://www.kaggle.com/competitions/playground-series-s6e10">Kaggle competition</a>
+    <a href="https://www.kaggle.com/datasets/teejmahal20/airline-passenger-satisfaction">Original survey</a>
+  </div>
+  <div class="stats">
+    <div class="stat"><b>0.96051</b><span>best public score (stack, CV 0.96109), rank 1,192 of 2,914</span></div>
+    <div class="stat"><b>0.994</b><span>the same stack's AUC on the 129,880 real passengers</span></div>
+    <div class="stat"><b>~3%</b><span>random label flips that bring the real-survey AUC down to the competition's</span></div>
+    <div class="stat"><b>+0.0018</b><span>CV gain from treating every value as a category</span></div>
+  </div>
+</header>
+
+<h2><span class="num">01</span>Seven submissions, one run</h2>
+<p>Five models on one shared 5-fold split, plus two blends. All seven files were submitted together, so nothing was tuned on the leaderboard. The last column scores the same fold models on the original survey, which they never trained on.</p>
+<div class="tablewrap"><table>
+  <thead><tr><th>Submission</th><th>5-fold CV</th><th>Kaggle public</th><th>Real survey</th></tr></thead>
+  <tbody>
+    <tr><td>Logistic regression</td><td>0.92156</td><td>0.92227</td><td>0.92000</td></tr>
+    <tr><td>LightGBM, raw columns</td><td>0.95884</td><td>0.95813</td><td>0.99300</td></tr>
+    <tr><td>LightGBM + value features</td><td>0.96064</td><td>0.96017</td><td>0.99327</td></tr>
+    <tr><td>XGBoost (GPU) + value features</td><td>0.96079</td><td>0.96037</td><td>0.99333</td></tr>
+    <tr><td>CatBoost (GPU), values as categories</td><td>0.96069</td><td>0.96038</td><td>0.99354</td></tr>
+    <tr><td>Rank mean of the four tree models</td><td>0.96097</td><td>0.96029</td><td>0.99375</td></tr>
+    <tr class="win"><td>Logistic stack of the four tree models</td><td>0.96109</td><td>0.96051</td><td>0.99369</td></tr>
+  </tbody>
+</table></div>
+<figure>
+  <img src="img/models.png" alt="Two dot plots. Left: CV and public leaderboard AUC per model, from 0.958 for raw LightGBM to 0.961 for the stack, with leaderboard 0.0003 to 0.0007 below CV. Right: the same models on the real survey, 0.9930 to 0.9937.">
+  <figcaption>CV and the leaderboard agree to within 0.0007 and keep the models in nearly the same order. Fold-to-fold standard deviation is 0.0004-0.0005.</figcaption>
+</figure>
+
+<h2><span class="num">02</span>The labels set the ceiling, not the passengers</h2>
+<p>A model trained only on synthetic rows ranks the real passengers at 0.9937. A LightGBM trained on the real survey and scored on a held-out 20% of it reaches 0.9950. So the synthetic data still carries the survey's structure. The score is limited by its labels.</p>
+<figure>
+  <img src="img/noise.png" alt="Line chart: stack AUC on the real survey falls almost linearly from 0.994 with no flipped labels to 0.912 with 8% flipped, crossing the competition CV of 0.961 between 3.0% and 3.5%.">
+  <figcaption>Each point flips a random share of the real-survey labels 5 times and re-scores the stack. With 3.0% flipped the AUC is 0.963, with 3.5% it is 0.958. The competition's 0.961 lies between them.</figcaption>
+</figure>
+<p>Seen this way, the leaderboard is packed against a noise floor. The leader is 0.0036 above this stack and the median team 0.0009 below it.</p>
+
+<h2><span class="num">03</span>Values as categories help on real data too</h2>
+<p>The value models treat each exact value, and each pair of values from two columns, as a category. They use out-of-fold target encoding over the 21 columns and all 210 pairs, plus value counts. CatBoost does the same with its own categorical handling. This lifts CV from 0.9588 to 0.9606-0.9608. I expected these models to be learning quirks of the generator and to lose on the real survey. They gain there as well, from 0.9930 to 0.9933-0.9935.</p>
+
+<h2><span class="num">04</span>The real survey is not extra training data</h2>
+<p>Appending all 129,880 original passengers to every training fold moves CV from 0.95884 to 0.95866. A model trained only on the survey scores 0.9549 on the competition rows. The generator changed the data. 91% of synthetic passengers left on time, against 56% in the survey. The satisfaction drop with delays is steeper, and one rating ("Inflight service") was removed.</p>
+<figure>
+  <img src="img/shift.png" alt="Grouped bars. Left: 91% of competition passengers have zero departure delay vs 56% in the original survey. Right: share satisfied falls with delay in both, to 33% vs 38% for 16-60 minutes and 31% vs 36% above 60 minutes.">
+  <figcaption>Departure delay in the competition data and the original survey.</figcaption>
+</figure>
+
+<h2><span class="num">05</span>Caveats</h2>
+<ul>
+  <li>The label-flip curve is a model of the gap, not proof of how the generator works. Real-survey labels have their own noise, so 0.994 is a ceiling measured against those labels.</li>
+  <li>Early stopping watches the validation fold, as is standard for out-of-fold stacking. With 700k rows the optimism is small and the same for every model, and the leaderboard agrees.</li>
+  <li>The public leaderboard uses part of the test set. Private scores are released when the competition closes on 2026-10-31.</li>
+</ul>
+
+<footer>
+  Pablo Reyes · Data: Kaggle Playground Series S6E10 and the Airline Passenger Satisfaction survey (neither redistributed). Code under MIT.
+</footer>
+</div>
+</body>
+</html>

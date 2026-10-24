@@ -1,0 +1,51 @@
+[
+  {
+    "name": "stack",
+    "date": "2026-10-24 19:28:36",
+    "status": "SubmissionStatus.COMPLETE",
+    "public_score": "0.96051",
+    "private_score": ""
+  },
+  {
+    "name": "rank_mean",
+    "date": "2026-10-24 19:28:31.407000",
+    "status": "SubmissionStatus.COMPLETE",
+    "public_score": "0.96029",
+    "private_score": ""
+  },
+  {
+    "name": "catboost_values",
+    "date": "2026-10-24 19:28:27",
+    "status": "SubmissionStatus.COMPLETE",
+    "public_score": "0.96038",
+    "private_score": ""
+  },
+  {
+    "name": "xgb_values",
+    "date": "2026-10-24 19:28:22",
+    "status": "SubmissionStatus.COMPLETE",
+    "public_score": "0.96037",
+    "private_score": ""
+  },
+  {
+    "name": "lgbm_values",
+    "date": "2026-10-24 19:28:18",
+    "status": "SubmissionStatus.COMPLETE",
+    "public_score": "0.96017",
+    "private_score": ""
+  },
+  {
+    "name": "lgbm_raw",
+    "date": "2026-10-24 19:28:14.033000",
+    "status": "SubmissionStatus.COMPLETE",
+    "public_score": "0.95813",
+    "private_score": ""
+  },
+  {
+    "name": "logreg",
+    "date": "2026-10-24 19:28:09.537000",
+    "status": "SubmissionStatus.COMPLETE",
+    "public_score": "0.92227",
+    "private_score": ""
+  }
+]

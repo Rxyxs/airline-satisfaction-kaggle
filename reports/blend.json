@@ -1,0 +1,64 @@
+{
+  "stack_weights": {
+    "lgbm_raw": 0.0424,
+    "lgbm_values": 0.2684,
+    "xgb_values": 0.2687,
+    "catboost_values": 0.4231
+  },
+  "scores": {
+    "logreg": {
+      "cv_auc": 0.9215582480188776,
+      "original_auc": 0.9199976228912979
+    },
+    "lgbm_raw": {
+      "cv_auc": 0.958835970893577,
+      "original_auc": 0.9930025309592563
+    },
+    "lgbm_values": {
+      "cv_auc": 0.9606422521504534,
+      "original_auc": 0.9932684177183231
+    },
+    "xgb_values": {
+      "cv_auc": 0.960789410369161,
+      "original_auc": 0.9933282476314774
+    },
+    "catboost_values": {
+      "cv_auc": 0.9606902852666849,
+      "original_auc": 0.9935414923666257
+    },
+    "rank_mean": {
+      "cv_auc": 0.9609708638327379,
+      "original_auc": 0.993752740720548
+    },
+    "stack": {
+      "cv_auc": 0.9610897443220682,
+      "original_auc": 0.9936899686512679
+    }
+  },
+  "oof_correlation": {
+    "lgbm_raw": {
+      "lgbm_raw": 1.0,
+      "lgbm_values": 0.9463,
+      "xgb_values": 0.9486,
+      "catboost_values": 0.9549
+    },
+    "lgbm_values": {
+      "lgbm_raw": 0.9463,
+      "lgbm_values": 1.0,
+      "xgb_values": 0.9837,
+      "catboost_values": 0.971
+    },
+    "xgb_values": {
+      "lgbm_raw": 0.9486,
+      "lgbm_values": 0.9837,
+      "xgb_values": 1.0,
+      "catboost_values": 0.9751
+    },
+    "catboost_values": {
+      "lgbm_raw": 0.9549,
+      "lgbm_values": 0.971,
+      "xgb_values": 0.9751,
+      "catboost_values": 1.0
+    }
+  }
+}
