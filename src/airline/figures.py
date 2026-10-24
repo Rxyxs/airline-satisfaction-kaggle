@@ -19,7 +19,8 @@ from .run import REPORTS  # noqa: E402
 IMG = ROOT / "docs" / "img"
 BLUE, ORANGE, AQUA = "#2a78d6", "#eb6834", "#1baf7a"
 INK, MUTED, GRID = "#0b0b0b", "#52514e", "#e4e3df"
-ORDER = ["lgbm_raw", "lgbm_values", "xgb_values", "catboost_values", "rank_mean", "stack"]
+ORDER = ["lgbm_raw", "lgbm_values", "xgb_values", "catboost_values", "realmlp_values", "rank_mean", "stack",
+         "stack_extended"]
 
 
 def _style(ax):
@@ -35,7 +36,7 @@ def _style(ax):
 def models() -> None:
     blend = json.loads((REPORTS / "blend.json").read_text())["scores"]
     lb = {r["name"]: float(r["public_score"]) for r in json.loads((REPORTS / "leaderboard.json").read_text())}
-    fig, axes = plt.subplots(1, 2, figsize=(11, 3.8), sharey=True)
+    fig, axes = plt.subplots(1, 2, figsize=(11, 4.4), sharey=True)
     ypos = np.arange(len(ORDER))[::-1]
     ax = axes[0]
     ax.scatter([blend[n]["cv_auc"] for n in ORDER], ypos, s=60, color=BLUE, label="5-fold CV", zorder=3,
@@ -114,10 +115,43 @@ def shift() -> dict:
     return {"delay_share": share.round(4).to_dict(), "satisfied_by_delay": sat.round(4).to_dict()}
 
 
+def ablation() -> None:
+    rep = json.loads((REPORTS / "ablation.json").read_text())
+    names = [n for n in rep if n not in ("raw", "seed_check")]
+    sd = rep["seed_check"]["raw summary"]
+    fig, axes = plt.subplots(1, 2, figsize=(11, 3.9), sharey=True)
+    ypos = np.arange(len(names))[::-1]
+    for ax, key, sdk, color, title in (
+        (axes[0], "delta_cv", "cv_sd", BLUE, "Gain on the competition (5-fold CV)"),
+        (axes[1], "delta_original", "original_sd", AQUA, "Gain on the real survey"),
+    ):
+        vals = [rep[n][key] * 1e4 for n in names]
+        band = 2 * sd[sdk] * 1e4
+        ax.axvspan(-band, band, color=GRID, alpha=0.8, linewidth=0)
+        ax.axvline(0, color=MUTED, linewidth=0.8)
+        ax.hlines(ypos, 0, vals, color=color, linewidth=2)
+        ax.scatter(vals, ypos, s=60, color=color, zorder=3, edgecolor="white", linewidth=1.5)
+        for v, yv in zip(vals, ypos):
+            label = "0.0" if abs(v) < 0.05 else f"{v:+.1f}"
+            ax.text(v + (0.6 if v >= 0 else -0.6), yv, label, va="center", ha="left" if v >= 0 else "right",
+                    fontsize=8.5, color=INK)
+        ax.set_title(title, loc="left", fontsize=11, color=INK)
+        ax.set_xlabel("AUC change vs raw LightGBM (x 10^-4); grey band = 2 SD across seeds", color=MUTED, fontsize=8.5)
+        _style(ax)
+    axes[0].set_yticks(ypos, names)
+    lo = min(rep[n]["delta_original"] for n in names) * 1e4 - 1.5
+    axes[1].set_xlim(lo, max(rep[n]["delta_original"] for n in names) * 1e4 + 1.5)
+    axes[0].set_xlim(-1.5, max(rep[n]["delta_cv"] for n in names) * 1e4 + 3)
+    fig.tight_layout()
+    fig.savefig(IMG / "ablation.png", dpi=150)
+    plt.close(fig)
+
+
 def main() -> None:
     IMG.mkdir(parents=True, exist_ok=True)
     models()
     noise()
+    ablation()
     (REPORTS / "shift.json").write_text(json.dumps(shift(), indent=2))
 
 

@@ -4,6 +4,7 @@ Two blends, both chosen before any leaderboard score is seen:
 - rank_mean: average rank of the four tree models, no fitted weights.
 - stack: logistic regression on the models' logits. Its CV score is itself cross-validated over
   the OOF rows, so the weights are never scored on the rows that fitted them.
+- stack_extended: the same stack over the four tree models plus RealMLP and lgbm_all.
 
     python -m airline.blend
 """
@@ -24,6 +25,7 @@ from .run import PREDS, REPORTS, folds
 
 SUBMISSIONS = ROOT / "submissions"
 TREES = ["lgbm_raw", "lgbm_values", "xgb_values", "catboost_values"]
+EXTENDED = TREES + ["realmlp_values", "lgbm_all"]
 
 
 def _load(names):
@@ -39,33 +41,39 @@ def _logits(m: np.ndarray) -> np.ndarray:
     return logit(np.clip(m, 1e-6, 1 - 1e-6))
 
 
+def _stack(Q: dict, y) -> tuple[dict, LogisticRegression]:
+    stack = LogisticRegression(C=1.0, max_iter=1000)
+    cv = [(tr, va) for tr, va in folds(y)]
+    oof = cross_val_predict(stack, _logits(Q["oof"]), y, cv=cv, method="predict_proba")[:, 1]
+    stack.fit(_logits(Q["oof"]), y)
+    out = {"oof": oof}
+    out |= {p: stack.predict_proba(_logits(Q[p]))[:, 1] for p in ("test", "original")}
+    return out, stack
+
+
 def main() -> None:
     _, y, T = load_competition()
     _, yo = load_original()
-    names = [n for n in ["logreg"] + TREES if (PREDS / f"{n}.npz").exists()]
+    names = [n for n in ["logreg"] + EXTENDED if (PREDS / f"{n}.npz").exists()]
     trees = [n for n in TREES if n in names]
+    extended = [n for n in EXTENDED if n in names]
     P = _load(names)
     Q = _load(trees)
     report = {}
 
     preds = {n: {p: P[p][:, i] for p in P} for i, n in enumerate(names)}
     preds["rank_mean"] = {p: rank_mean(Q[p]) for p in Q}
-    stack = LogisticRegression(C=1.0, max_iter=1000)
-    cv = [(tr, va) for tr, va in folds(y)]
-    stack_oof = cross_val_predict(stack, _logits(Q["oof"]), y, cv=cv, method="predict_proba")[:, 1]
-    stack.fit(_logits(Q["oof"]), y)
-    preds["stack"] = {
-        "oof": stack_oof,
-        "test": stack.predict_proba(_logits(Q["test"]))[:, 1],
-        "original": stack.predict_proba(_logits(Q["original"]))[:, 1],
-    }
+    preds["stack"], stack = _stack(Q, y)
     report["stack_weights"] = dict(zip(trees, stack.coef_[0].round(4).tolist()))
+    if len(extended) > len(trees):
+        preds["stack_extended"], stack = _stack(_load(extended), y)
+        report["stack_extended_weights"] = dict(zip(extended, stack.coef_[0].round(4).tolist()))
 
     report["scores"] = {
         n: {"cv_auc": roc_auc_score(y, p["oof"]), "original_auc": roc_auc_score(yo, p["original"])}
         for n, p in preds.items()
     }
-    report["oof_correlation"] = pd.DataFrame(Q["oof"], columns=trees).corr(method="spearman").round(4).to_dict()
+    report["oof_correlation"] = pd.DataFrame(P["oof"], columns=names).corr(method="spearman").round(4).to_dict()
     (REPORTS / "blend.json").write_text(json.dumps(report, indent=2))
     print(json.dumps(report["scores"], indent=2))
 

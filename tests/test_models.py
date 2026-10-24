@@ -27,3 +27,11 @@ def test_cpu_models_learn_a_planted_rule():
 def test_rank_mean_is_order_preserving():
     m = np.array([[0.1, 10], [0.5, 20], [0.9, 30]])
     assert np.all(np.diff(rank_mean(m)) > 0)
+
+
+def test_build_view_adds_the_requested_groups():
+    X, y = labelled(300, 4)
+    V, _ = labelled(50, 5)
+    a, b, ex = M.build_view(("counts", "te_single", "digits"), X, y, V, {"e": V}, pd.concat([X, V]), 0)
+    assert a.shape[1] == b.shape[1] == ex["e"].shape[1] == 21 + 21 + 21 + 20
+    assert not any(c.startswith("te_") and "|" in c for c in a.columns)
