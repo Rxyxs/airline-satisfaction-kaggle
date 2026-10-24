@@ -63,22 +63,22 @@
 <div class="wrap">
 <header>
   <h1>A 0.961 leaderboard that is really a 0.994 model</h1>
-  <p class="lede">Kaggle Playground S6E10 asks for the probability that an airline passenger is satisfied. Its 1 million rows are synthetic and were generated from a real survey of 129,880 passengers. I scored every competition model on that real survey too. The stack that gets <strong>0.961 on the leaderboard ranks real passengers at 0.994</strong>. To push it back down to 0.961, about <strong>3% of the real labels</strong> have to be flipped at random.</p>
+  <p class="lede">Kaggle Playground S6E10 asks for the probability that an airline passenger is satisfied. Its 1 million rows are synthetic and were generated from a real survey of 129,880 passengers. I scored every competition model on that real survey too. The stack that gets <strong>0.961 on the leaderboard ranks real passengers at 0.994</strong>. To push it back down to 0.961, about <strong>3% of the real labels</strong> have to be flipped at random. The real survey also shows which popular feature tricks help real passengers and which only exploit the generator.</p>
   <div class="links">
     <a href="https://github.com/Rxyxs/airline-satisfaction-kaggle">Code on GitHub</a>
     <a href="https://www.kaggle.com/competitions/playground-series-s6e10">Kaggle competition</a>
     <a href="https://www.kaggle.com/datasets/teejmahal20/airline-passenger-satisfaction">Original survey</a>
   </div>
   <div class="stats">
-    <div class="stat"><b>0.96051</b><span>best public score (stack, CV 0.96109), rank 1,192 of 2,914</span></div>
+    <div class="stat"><b>0.96055</b><span>best public score (extended stack, CV 0.96113), rank 1,179 of 2,924</span></div>
     <div class="stat"><b>0.994</b><span>the same stack's AUC on the 129,880 real passengers</span></div>
     <div class="stat"><b>~3%</b><span>random label flips that bring the real-survey AUC down to the competition's</span></div>
-    <div class="stat"><b>+0.0018</b><span>CV gain from treating every value as a category</span></div>
+    <div class="stat"><b>&minus;0.00027</b><span>real-survey change from target-encoding exact values, a trick worth +0.0013 on competition CV</span></div>
   </div>
 </header>
 
-<h2><span class="num">01</span>Seven submissions, one run</h2>
-<p>Five models on one shared 5-fold split, plus two blends. All seven files were submitted together, so nothing was tuned on the leaderboard. The last column scores the same fold models on the original survey, which they never trained on.</p>
+<h2><span class="num">01</span>Nine submissions, picked on CV</h2>
+<p>Seven models on one shared 5-fold split, plus three blends. The first seven files were submitted together. RealMLP and the extended stack were picked on CV and submitted together later, so nothing was tuned on the leaderboard. The last column scores the same fold models on the original survey, which they never trained on.</p>
 <div class="tablewrap"><table>
   <thead><tr><th>Submission</th><th>5-fold CV</th><th>Kaggle public</th><th>Real survey</th></tr></thead>
   <tbody>
@@ -86,14 +86,16 @@
     <tr><td>LightGBM, raw columns</td><td>0.95884</td><td>0.95813</td><td>0.99300</td></tr>
     <tr><td>LightGBM + value features</td><td>0.96064</td><td>0.96017</td><td>0.99327</td></tr>
     <tr><td>XGBoost (GPU) + value features</td><td>0.96079</td><td>0.96037</td><td>0.99333</td></tr>
-    <tr><td>CatBoost (GPU), values as categories</td><td>0.96069</td><td>0.96038</td><td>0.99354</td></tr>
-    <tr><td>Rank mean of the four tree models</td><td>0.96097</td><td>0.96029</td><td>0.99375</td></tr>
-    <tr class="win"><td>Logistic stack of the four tree models</td><td>0.96109</td><td>0.96051</td><td>0.99369</td></tr>
+    <tr><td>CatBoost (GPU), values as categories</td><td>0.96064*</td><td>0.96038</td><td>0.99353</td></tr>
+    <tr><td>RealMLP (GPU) + value features</td><td>0.96051</td><td>0.95995</td><td>0.99331</td></tr>
+    <tr><td>Rank mean of the four tree models</td><td>0.96096*</td><td>0.96029</td><td>0.99375</td></tr>
+    <tr><td>Logistic stack of the four tree models</td><td>0.96107*</td><td>0.96051</td><td>0.99369</td></tr>
+    <tr class="win"><td>Extended stack (+ RealMLP, + LightGBM with every group)</td><td>0.96113</td><td>0.96055</td><td>0.99376</td></tr>
   </tbody>
 </table></div>
 <figure>
   <img src="img/models.png" alt="Two dot plots. Left: CV and public leaderboard AUC per model, from 0.958 for raw LightGBM to 0.961 for the stack, with leaderboard 0.0003 to 0.0007 below CV. Right: the same models on the real survey, 0.9930 to 0.9937.">
-  <figcaption>CV and the leaderboard agree to within 0.0007 and keep the models in nearly the same order. Fold-to-fold standard deviation is 0.0004-0.0005.</figcaption>
+  <figcaption>CV and the leaderboard agree to within 0.0007 and keep the models in nearly the same order. Fold-to-fold standard deviation is 0.0004-0.0005. *CatBoost on GPU is not bit-reproducible: a rerun moved its CV from 0.96069 to 0.96064. The Kaggle scores are for the first run's files.</figcaption>
 </figure>
 
 <h2><span class="num">02</span>The labels set the ceiling, not the passengers</h2>
@@ -102,10 +104,27 @@
   <img src="img/noise.png" alt="Line chart: stack AUC on the real survey falls almost linearly from 0.994 with no flipped labels to 0.912 with 8% flipped, crossing the competition CV of 0.961 between 3.0% and 3.5%.">
   <figcaption>Each point flips a random share of the real-survey labels 5 times and re-scores the stack. With 3.0% flipped the AUC is 0.963, with 3.5% it is 0.958. The competition's 0.961 lies between them.</figcaption>
 </figure>
-<p>Seen this way, the leaderboard is packed against a noise floor. The leader is 0.0036 above this stack and the median team 0.0009 below it.</p>
+<p>Seen this way, the leaderboard is packed against a noise floor. The leader is 0.0035 above my best submission and the median team 0.0010 below it.</p>
 
-<h2><span class="num">03</span>Values as categories help on real data too</h2>
-<p>The value models treat each exact value, and each pair of values from two columns, as a category. They use out-of-fold target encoding over the 21 columns and all 210 pairs, plus value counts. CatBoost does the same with its own categorical handling. This lifts CV from 0.9588 to 0.9606-0.9608. I expected these models to be learning quirks of the generator and to lose on the real survey. They gain there as well, from 0.9930 to 0.9933-0.9935.</p>
+<h2><span class="num">03</span>Which tricks are about passengers?</h2>
+<p>Public notebooks pile on features: exact values as categories, value counts, the digits of each number, rates from the original survey. I added each group on its own to the raw-column LightGBM, on the same folds, and scored every fold model on both the competition and the real survey. Three configurations were rerun with three more seeds. The seed-to-seed standard deviation is 0.00004 on both scores.</p>
+<div class="tablewrap"><table>
+  <thead><tr><th>Feature group added</th><th>Gain on CV</th><th>Gain on real survey</th></tr></thead>
+  <tbody>
+    <tr><td>Value counts</td><td>+0.00067</td><td>+0.00013</td></tr>
+    <tr><td>Decimal digits of the numbers</td><td>+0.00061</td><td>0.00000</td></tr>
+    <tr><td>Target encoding of exact values</td><td>+0.00128</td><td>&minus;0.00025</td></tr>
+    <tr><td>Target encoding of values and 210 column pairs</td><td>+0.00182</td><td>+0.00018</td></tr>
+    <tr><td>Satisfaction rates from the real survey</td><td>+0.00104</td><td>+0.00024</td></tr>
+    <tr class="win"><td>Counts + both encodings (the value view)</td><td>+0.00181</td><td>+0.00027</td></tr>
+    <tr><td>All of the above</td><td>+0.00180</td><td>+0.00013</td></tr>
+  </tbody>
+</table></div>
+<figure>
+  <img src="img/ablation.png" alt="Two lollipop charts of AUC change versus raw LightGBM. Left, competition CV: every group gains between 6 and 18 units of 10^-4. Right, real survey: digits 0, exact-value target encoding -2.5, other groups +1.3 to +2.7.">
+  <figcaption>Seed-0 runs; the grey band is two seed standard deviations around zero.</figcaption>
+</figure>
+<p><strong>Digits are a pure generator artifact.</strong> Averaged over four seeds they add +0.0005 on CV (about 12 seed standard deviations) and &minus;0.00007 on the real survey. <strong>Target-encoding exact values on its own hurts real passengers:</strong> it is the largest single-group gain on CV, and &minus;0.00027 on the real survey (about 6 standard deviations), because the model learns rates for individual ages and distances that the generator made up. Adding the column pairs turns the real-survey effect positive. Stacking every group ties the value view on CV and does worse on the real survey (0.99313 vs 0.99327). On the leaderboard, both kinds of gain look the same.</p>
 
 <h2><span class="num">04</span>The real survey is not extra training data</h2>
 <p>Appending all 129,880 original passengers to every training fold moves CV from 0.95884 to 0.95866. A model trained only on the survey scores 0.9549 on the competition rows. The generator changed the data. 91% of synthetic passengers left on time, against 56% in the survey. The satisfaction drop with delays is steeper, and one rating ("Inflight service") was removed.</p>
@@ -114,7 +133,10 @@
   <figcaption>Departure delay in the competition data and the original survey.</figcaption>
 </figure>
 
-<h2><span class="num">05</span>Caveats</h2>
+<h2><span class="num">05</span>A neural net adds diversity, not score</h2>
+<p>RealMLP on the value view scores 0.96051 CV, close to the boosted models. Its out-of-fold predictions correlate 0.969-0.974 with the other value models, as low as CatBoost's, so the extended stack splits most of its weight between the two (0.37 and 0.36). The gain is 0.00006 CV and 0.00004 on the leaderboard. Against a noise floor this close, extra models give almost nothing back.</p>
+
+<h2><span class="num">06</span>Caveats</h2>
 <ul>
   <li>The label-flip curve is a model of the gap, not proof of how the generator works. Real-survey labels have their own noise, so 0.994 is a ceiling measured against those labels.</li>
   <li>Early stopping watches the validation fold, as is standard for out-of-fold stacking. With 700k rows the optimism is small and the same for every model, and the leaderboard agrees.</li>

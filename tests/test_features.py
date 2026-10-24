@@ -45,3 +45,27 @@ def test_counts_use_pool_frequencies():
     d = pd.DataFrame({c: [1, 2, 3] for c in FEATURES})
     out = F.counts(d, pool)
     assert out[f"cnt_{FEATURES[0]}"].tolist() == [2, 1, 0]
+
+
+def test_digits_split_numbers_by_position():
+    d = frame(3)
+    d["Flight Distance"] = [1234.0, 5.0, 67.8]
+    out = F.digits(d)
+    assert out["dig0_Flight Distance"].tolist() == [4, 5, 7]
+    assert out["dig3_Flight Distance"].tolist() == [1, 0, 0]
+    assert out["dig-1_Flight Distance"].tolist() == [0, 0, 8]
+
+
+def test_survey_means_shrink_rare_values_to_the_mean():
+    src = pd.DataFrame({"k": ["a"] * 100 + ["b"]})
+    y = pd.Series([1] * 100 + [0])
+    out = F.survey_means(pd.DataFrame({"k": ["a", "b", "zz"]}), src, y)
+    a, b, unseen = out["sv_k"]
+    assert a > 0.95 and 0.9 < b < a and abs(unseen - y.mean()) < 1e-12
+
+
+def test_survey_means_oof_never_uses_the_rows_own_label():
+    keys = pd.DataFrame({"k": [str(i) for i in range(200)]})
+    y = pd.Series(np.arange(200) % 2)
+    out = F.survey_means_oof(keys, y)
+    assert np.allclose(out["sv_k"], out["sv_k"].iloc[0], atol=0.02)

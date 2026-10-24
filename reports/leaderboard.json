@@ -1,5 +1,19 @@
 [
   {
+    "name": "realmlp_values",
+    "date": "2026-10-24 23:09:13.523000",
+    "status": "SubmissionStatus.COMPLETE",
+    "public_score": "0.95995",
+    "private_score": ""
+  },
+  {
+    "name": "stack_extended",
+    "date": "2026-10-24 23:09:08.777000",
+    "status": "SubmissionStatus.COMPLETE",
+    "public_score": "0.96055",
+    "private_score": ""
+  },
+  {
     "name": "stack",
     "date": "2026-10-24 19:28:36",
     "status": "SubmissionStatus.COMPLETE",

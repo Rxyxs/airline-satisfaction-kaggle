@@ -7,7 +7,7 @@ import numpy as np
 import pandas as pd
 from sklearn.preprocessing import TargetEncoder
 
-from .data import CATEGORICAL, FEATURES
+from .data import CATEGORICAL, FEATURES, NUMERIC
 
 PAIRS = list(itertools.combinations(FEATURES, 2))
 
@@ -49,6 +49,41 @@ def target_encode(
 def with_encoding(frame: pd.DataFrame, enc: np.ndarray, names: list[str]) -> pd.DataFrame:
     te = pd.DataFrame(enc, columns=[f"te_{n}" for n in names], index=frame.index)
     return pd.concat([frame, te], axis=1)
+
+
+def digits(df: pd.DataFrame) -> pd.DataFrame:
+    """Each decimal digit (tenths to thousands) of the four numeric columns as its own feature."""
+    out = {}
+    for c in NUMERIC:
+        v = df[c].fillna(0)
+        for k in range(-1, 4):
+            # round before floor: 1234.0 / 0.1 is 12339.999... in floating point
+            out[f"dig{k}_{c}"] = (np.floor(np.round(v / 10.0**k, 6)) % 10).astype("int8").to_numpy()
+    return pd.DataFrame(out, index=df.index)
+
+
+def survey_means(keys: pd.DataFrame, keys_src: pd.DataFrame, y_src: pd.Series, smooth: float = 20.0) -> pd.DataFrame:
+    """Satisfaction rate of each value (and value pair) in the real survey, shrunk to its mean.
+
+    Uses only survey labels, so on competition rows it is an external prior, not a leak.
+    """
+    g = float(y_src.mean())
+    out = {}
+    for c in keys.columns:
+        s = pd.DataFrame({"k": keys_src[c].to_numpy(), "y": y_src.to_numpy()}).groupby("k")["y"].agg(["sum", "count"])
+        rate = (s["sum"] + smooth * g) / (s["count"] + smooth)
+        out[f"sv_{c}"] = keys[c].map(rate).fillna(g).to_numpy()
+    return pd.DataFrame(out, index=keys.index)
+
+
+def survey_means_oof(keys_src: pd.DataFrame, y_src: pd.Series, n_folds: int = 5, seed: int = 0) -> pd.DataFrame:
+    """survey_means for the survey's own rows, each fold encoded from the other folds only."""
+    from sklearn.model_selection import StratifiedKFold
+
+    parts = []
+    for tr, va in StratifiedKFold(n_folds, shuffle=True, random_state=seed).split(keys_src, y_src):
+        parts.append(survey_means(keys_src.iloc[va], keys_src.iloc[tr], y_src.iloc[tr]))
+    return pd.concat(parts).loc[keys_src.index]
 
 
 def counts(df: pd.DataFrame, pool: pd.DataFrame) -> pd.DataFrame:
