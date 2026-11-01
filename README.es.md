@@ -23,9 +23,9 @@ Esa encuesta real permite además una prueba que el leaderboard no puede hacer. 
 de features puedo preguntar si su ganancia se mantiene con pasajeros reales o si viene solo de
 cómo se generaron las filas sintéticas. Algunos de los trucos populares no pasan esa prueba.
 
-**Mejor puntaje público en Kaggle: 0.96055** (stack de cinco modelos de boosting y un RealMLP;
-CV 0.96113). Puesto 1.179 de 2.924 equipos el 2026-10-24. El primero está en 0.96407 y el equipo
-mediano en 0.95958.
+**Puntaje privado final en Kaggle: 0.96144** (stack de cinco modelos de boosting y un RealMLP;
+CV 0.96113, público 0.96055). El leaderboard privado ordena mis nueve envíos exactamente como la CV.
+El público invertía dos pares (CatBoost sobre XGBoost, y XGBoost sobre la media de rankings).
 
 **Página del proyecto:** https://rxyxs.github.io/airline-satisfaction-kaggle/
 
@@ -37,17 +37,17 @@ ajustó nada mirando el leaderboard. "Encuesta real" son los 129.880 pasajeros o
 modelos nunca entrenaron con ellos, y cada número es la predicción promedio de los cinco
 modelos de fold.
 
-| Envío | CV 5 folds | Kaggle público | Encuesta real |
-|---|---|---|---|
-| Regresión logística (one-hot, escalada) | 0.92156 | 0.92227 | 0.92000 |
-| LightGBM, las 21 columnas tal cual | 0.95884 | 0.95813 | 0.99300 |
-| LightGBM + features de valores | 0.96064 | 0.96017 | 0.99327 |
-| XGBoost (GPU) + features de valores | 0.96079 | 0.96037 | 0.99333 |
-| CatBoost (GPU), cada columna también como categoría | 0.96064* | 0.96038 | 0.99353 |
-| RealMLP (GPU) + features de valores | 0.96051 | 0.95995 | 0.99331 |
-| Promedio de rangos de los cuatro modelos de árboles | 0.96096* | 0.96029 | 0.99375 |
-| Stack logístico de los cuatro modelos de árboles | 0.96107* | 0.96051 | 0.99369 |
-| **Stack logístico extendido** (cuatro árboles + RealMLP + LightGBM con todos los grupos de features) | **0.96113** | **0.96055** | 0.99376 |
+| Envío | CV 5 folds | Kaggle público | Kaggle privado | Encuesta real |
+|---|---|---|---|---|
+| Regresión logística (one-hot, escalada) | 0.92156 | 0.92227 | 0.92162 | 0.92000 |
+| LightGBM, las 21 columnas tal cual | 0.95884 | 0.95813 | 0.95933 | 0.99300 |
+| LightGBM + features de valores | 0.96064 | 0.96017 | 0.96113 | 0.99327 |
+| XGBoost (GPU) + features de valores | 0.96079 | 0.96037 | 0.96124 | 0.99333 |
+| CatBoost (GPU), cada columna también como categoría | 0.96064* | 0.96038 | 0.96116 | 0.99353 |
+| RealMLP (GPU) + features de valores | 0.96051 | 0.95995 | 0.96092 | 0.99331 |
+| Promedio de rangos de los cuatro modelos de árboles | 0.96096* | 0.96029 | 0.96126 | 0.99375 |
+| Stack logístico de los cuatro modelos de árboles | 0.96107* | 0.96051 | 0.96140 | 0.99369 |
+| **Stack logístico extendido** (cuatro árboles + RealMLP + LightGBM con todos los grupos de features) | **0.96113** | **0.96055** | **0.96144** | 0.99376 |
 
 La desviación estándar entre folds es 0.0004-0.0005 en todos los modelos. El CV y el
 leaderboard público coinciden con diferencias de hasta 0.0007 y ordenan los modelos casi igual.

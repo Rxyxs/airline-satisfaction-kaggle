@@ -70,7 +70,7 @@
     <a href="https://www.kaggle.com/datasets/teejmahal20/airline-passenger-satisfaction">Original survey</a>
   </div>
   <div class="stats">
-    <div class="stat"><b>0.96055</b><span>best public score (extended stack, CV 0.96113), rank 1,179 of 2,924</span></div>
+    <div class="stat"><b>0.96144</b><span>final private score (extended stack, CV 0.96113, public 0.96055)</span></div>
     <div class="stat"><b>0.994</b><span>the same stack's AUC on the 129,880 real passengers</span></div>
     <div class="stat"><b>~3%</b><span>random label flips that bring the real-survey AUC down to the competition's</span></div>
     <div class="stat"><b>&minus;0.00027</b><span>real-survey change from target-encoding exact values, a trick worth +0.0013 on competition CV</span></div>
@@ -80,17 +80,17 @@
 <h2><span class="num">01</span>Nine submissions, picked on CV</h2>
 <p>Seven models on one shared 5-fold split, plus three blends. The first seven files were submitted together. RealMLP and the extended stack were picked on CV and submitted together later, so nothing was tuned on the leaderboard. The last column scores the same fold models on the original survey, which they never trained on.</p>
 <div class="tablewrap"><table>
-  <thead><tr><th>Submission</th><th>5-fold CV</th><th>Kaggle public</th><th>Real survey</th></tr></thead>
+  <thead><tr><th>Submission</th><th>5-fold CV</th><th>Kaggle public</th><th>Kaggle private</th><th>Real survey</th></tr></thead>
   <tbody>
-    <tr><td>Logistic regression</td><td>0.92156</td><td>0.92227</td><td>0.92000</td></tr>
-    <tr><td>LightGBM, raw columns</td><td>0.95884</td><td>0.95813</td><td>0.99300</td></tr>
-    <tr><td>LightGBM + value features</td><td>0.96064</td><td>0.96017</td><td>0.99327</td></tr>
-    <tr><td>XGBoost (GPU) + value features</td><td>0.96079</td><td>0.96037</td><td>0.99333</td></tr>
-    <tr><td>CatBoost (GPU), values as categories</td><td>0.96064*</td><td>0.96038</td><td>0.99353</td></tr>
-    <tr><td>RealMLP (GPU) + value features</td><td>0.96051</td><td>0.95995</td><td>0.99331</td></tr>
-    <tr><td>Rank mean of the four tree models</td><td>0.96096*</td><td>0.96029</td><td>0.99375</td></tr>
-    <tr><td>Logistic stack of the four tree models</td><td>0.96107*</td><td>0.96051</td><td>0.99369</td></tr>
-    <tr class="win"><td>Extended stack (+ RealMLP, + LightGBM with every group)</td><td>0.96113</td><td>0.96055</td><td>0.99376</td></tr>
+    <tr><td>Logistic regression</td><td>0.92156</td><td>0.92227</td><td>0.92162</td><td>0.92000</td></tr>
+    <tr><td>LightGBM, raw columns</td><td>0.95884</td><td>0.95813</td><td>0.95933</td><td>0.99300</td></tr>
+    <tr><td>LightGBM + value features</td><td>0.96064</td><td>0.96017</td><td>0.96113</td><td>0.99327</td></tr>
+    <tr><td>XGBoost (GPU) + value features</td><td>0.96079</td><td>0.96037</td><td>0.96124</td><td>0.99333</td></tr>
+    <tr><td>CatBoost (GPU), values as categories</td><td>0.96064*</td><td>0.96038</td><td>0.96116</td><td>0.99353</td></tr>
+    <tr><td>RealMLP (GPU) + value features</td><td>0.96051</td><td>0.95995</td><td>0.96092</td><td>0.99331</td></tr>
+    <tr><td>Rank mean of the four tree models</td><td>0.96096*</td><td>0.96029</td><td>0.96126</td><td>0.99375</td></tr>
+    <tr><td>Logistic stack of the four tree models</td><td>0.96107*</td><td>0.96051</td><td>0.96140</td><td>0.99369</td></tr>
+    <tr class="win"><td>Extended stack (+ RealMLP, + LightGBM with every group)</td><td>0.96113</td><td>0.96055</td><td>0.96144</td><td>0.99376</td></tr>
   </tbody>
 </table></div>
 <figure>
@@ -140,7 +140,7 @@
 <ul>
   <li>The label-flip curve is a model of the gap, not proof of how the generator works. Real-survey labels have their own noise, so 0.994 is a ceiling measured against those labels.</li>
   <li>Early stopping watches the validation fold, as is standard for out-of-fold stacking. With 700k rows the optimism is small and the same for every model, and the leaderboard agrees.</li>
-  <li>The public leaderboard uses part of the test set. Private scores are released when the competition closes on 2026-10-31.</li>
+  <li>The private leaderboard (released at the close on 2026-10-31) ranks the nine submissions in exactly the CV order; the public one swapped two pairs.</li>
 </ul>
 
 <footer>

@@ -23,9 +23,9 @@ That real survey also gives a test that the leaderboard cannot. For every featur
 I can ask whether its gain carries over to real passengers, or comes only from how the
 synthetic rows were generated. Some of the popular tricks fail that test.
 
-**Best Kaggle public score: 0.96055** (stack of five boosted models and a RealMLP; CV 0.96113).
-Rank 1,179 of 2,924 teams on 2026-10-24. The leader is at 0.96407 and the median team at
-0.95958.
+**Final Kaggle private score: 0.96144** (stack of five boosted models and a RealMLP; CV 0.96113,
+public 0.96055). The private leaderboard ranks my nine submissions in exactly the CV order. The
+public one swapped two pairs (CatBoost over XGBoost, and XGBoost over the rank mean).
 
 **Project page:** https://rxyxs.github.io/airline-satisfaction-kaggle/
 
@@ -36,17 +36,17 @@ and the extended stack) were picked on CV and submitted together a few hours lat
 tuned on the leaderboard. "Real survey" means the 129,880 original passengers. The models never trained on
 them, and each number is the average prediction of the five fold models.
 
-| Submission | 5-fold CV | Kaggle public | Real survey |
-|---|---|---|---|
-| Logistic regression (one-hot, scaled) | 0.92156 | 0.92227 | 0.92000 |
-| LightGBM, the 21 columns as given | 0.95884 | 0.95813 | 0.99300 |
-| LightGBM + value features | 0.96064 | 0.96017 | 0.99327 |
-| XGBoost (GPU) + value features | 0.96079 | 0.96037 | 0.99333 |
-| CatBoost (GPU), every column also as a category | 0.96064* | 0.96038 | 0.99353 |
-| RealMLP (GPU) + value features | 0.96051 | 0.95995 | 0.99331 |
-| Rank mean of the four tree models | 0.96096* | 0.96029 | 0.99375 |
-| Logistic stack of the four tree models | 0.96107* | 0.96051 | 0.99369 |
-| **Logistic stack, extended** (four trees + RealMLP + LightGBM with every feature group) | **0.96113** | **0.96055** | 0.99376 |
+| Submission | 5-fold CV | Kaggle public | Kaggle private | Real survey |
+|---|---|---|---|---|
+| Logistic regression (one-hot, scaled) | 0.92156 | 0.92227 | 0.92162 | 0.92000 |
+| LightGBM, the 21 columns as given | 0.95884 | 0.95813 | 0.95933 | 0.99300 |
+| LightGBM + value features | 0.96064 | 0.96017 | 0.96113 | 0.99327 |
+| XGBoost (GPU) + value features | 0.96079 | 0.96037 | 0.96124 | 0.99333 |
+| CatBoost (GPU), every column also as a category | 0.96064* | 0.96038 | 0.96116 | 0.99353 |
+| RealMLP (GPU) + value features | 0.96051 | 0.95995 | 0.96092 | 0.99331 |
+| Rank mean of the four tree models | 0.96096* | 0.96029 | 0.96126 | 0.99375 |
+| Logistic stack of the four tree models | 0.96107* | 0.96051 | 0.96140 | 0.99369 |
+| **Logistic stack, extended** (four trees + RealMLP + LightGBM with every feature group) | **0.96113** | **0.96055** | **0.96144** | 0.99376 |
 
 Fold-to-fold standard deviation is 0.0004-0.0005 for every model. CV and the public
 leaderboard agree to within 0.0007 and rank the models in nearly the same order.
